@@ -11,11 +11,15 @@
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
+    "did-jwt-vc": "^4.0.4",
+    "did-resolver": "^4.1.0",
     "express": "^4.16.4",
     "express-session": "^1.15.3",
     "hbs": "^4.0.3",
+    "html5-qrcode": "^2.3.8",
     "morgan": "~1.9.1",
-    "serve-favicon": "~2.4.2"
+    "serve-favicon": "~2.4.2",
+    "web-did-resolver": "^2.0.27"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
