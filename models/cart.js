@@ -2,6 +2,7 @@ module.exports = function Cart(cart) {
     this.items = cart.items || {};
     this.totalItems = cart.totalItems || 0;
     this.totalPrice = cart.totalPrice || 0;
+    this.discountRate = cart.discountRate || 0;
 
     this.add = function(item, id) {
         var cartItem = this.items[id];
@@ -27,4 +28,8 @@ module.exports = function Cart(cart) {
         }
         return arr;
     };
+
+    this.discount = function() {
+        this.discountRate = 0.2;
+    }
 };

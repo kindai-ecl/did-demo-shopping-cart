@@ -21,11 +21,18 @@
             {{/each}}
         </ul>
     </div>
+    <div>
+        <p>
+            Discount: {{ discountRate }}%
+            <span class="pull-right">-{{ discountPrice }} CHF</span>
+        </p>
+    </div>
     <div class="text-right">
         <strong>Total: {{ totalPrice }} CHF</strong>
     </div>
     <hr>
     <div class="text-right">
+        <a href="/discount" type="button" class="btn btn-default">Apply discount</a>
         <a href="#" type="button" class="btn btn-success">Checkout</a>
     </div>
 {{ else }}

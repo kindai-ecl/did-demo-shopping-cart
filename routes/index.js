@@ -36,7 +36,9 @@ router.get('/cart', function(req, res, next) {
   res.render('cart', {
     title: 'NodeJS Shopping Cart',
     products: cart.getItems(),
-    totalPrice: cart.totalPrice
+    discountRate: cart.discountRate * 100,
+    discountPrice: cart.totalPrice * cart.discountRate,
+    totalPrice: cart.totalPrice * (1 - cart.discountRate),
   });
 });
 
@@ -48,5 +50,28 @@ router.get('/remove/:id', function(req, res, next) {
   req.session.cart = cart;
   res.redirect('/cart');
 });
+
+router.get('/discount', function(req, res, next) {
+  res.render('discount', {
+    title: 'NodeJS Shopping Cart',
+  });
+})
+
+router.get('/discount/verify', function(req, res, next) {
+  if (!req.session.cart) {
+    return res.render('cart', {
+      products: null
+    });
+  }
+  var cart = new Cart(req.session.cart);
+
+  // veirfy discount code and set discount rate
+  
+
+  cart.discount();
+
+  req.session.cart = cart;
+  res.redirect('/cart');
+})
 
 module.exports = router;
