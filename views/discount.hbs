@@ -1,32 +1,54 @@
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <h1>{{title}}</h1>
-
+<form action="/verify" method="POST">
     {{!-- radiobutton --}}
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="vc" id="vc" value="vc">
+    <div class="form-check" style="text-align:center">
+        <input class="form-check-input" type="radio" name="option" id="vc" value="vc" checked>
         <label class="form-check-label" for="vc">
             VCs
         </label>
-        <input class="form-check-input" type="radio" name="vp" id="vp" value="vp">
+        <input class="form-check-input" type="radio" name="option" id="vp" value="vp">
         <label class="form-check-label" for="vp">
             VPs
         </label>
     </div>
     <div id="reader" style="width: 100%;"></div>
-    <p>Result: <span id="result">None</span></p>
+    <input type="hidden" id="qrData" name="qrData" value="">
 
     <div class="text-right">
-        <a href="/discount/verify" type="button" class="btn btn-success">Apply discount</a>
+        <button id="submitBtn" type="submit" class="btn btn-success" disabled>Apply</button>
     </div>
+</form>
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="/js/html5-qrcode.min.js"></script>
     <script>
         const html5QrCode = new Html5Qrcode("reader");
-        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        document.getElementById('result').innerText = decodedText; // 結果を表示
-        };
 
         const config = { fps: 10, qrbox: 350 };
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            const qrDataInput = document.getElementById('qrData');
+            qrDataInput.value = decodedText;
 
-        html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+            Toastify({
+                text: "QR Code Scanned Successfully!",
+                duration: 7000, 
+                gravity: "top", 
+                position: "center", 
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+            }).showToast();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            html5QrCode.pause().catch(err => console.error("Failed to pause scanning:", err));
+            // html5QrCode.stop().catch(err => console.error("Failed to stop scanning:", err));
+        };
+
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            config,
+            qrCodeSuccessCallback
+        )
         .catch(err => console.error(`Error starting QR Code scanner: ${err}`));
+
     </script>

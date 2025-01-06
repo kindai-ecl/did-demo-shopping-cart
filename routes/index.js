@@ -4,6 +4,7 @@ var router = express.Router();
 var fs = require('fs');
 
 var Cart = require('../models/cart');
+var didResolver = require('../models/presentation-resolver');
 var products = JSON.parse(fs.readFileSync('./data/products.json', 'utf8'));
 
 router.get('/', function (req, res, next) {
@@ -37,8 +38,8 @@ router.get('/cart', function(req, res, next) {
     title: 'NodeJS Shopping Cart',
     products: cart.getItems(),
     discountRate: cart.discountRate * 100,
-    discountPrice: cart.totalPrice * cart.discountRate,
-    totalPrice: cart.totalPrice * (1 - cart.discountRate),
+    discountPrice: Math.round(cart.totalPrice * cart.discountRate),
+    totalPrice: cart.totalPrice - Math.round(cart.totalPrice * cart.discountRate),
   });
 });
 
@@ -57,6 +58,26 @@ router.get('/discount', function(req, res, next) {
   });
 })
 
+router.post('/verify', function(req, res, next) {
+  var cart = new Cart(req.session.cart ? req.session.cart : {});
+  const option = req.body.option;
+  const qrData = req.body.qrData;
+  try {
+    if(option == 'vc') {
+      didResolver.verifiedVC(qrData);
+    } else if(option == 'vp') {
+      didResolver.verifiedVP(qrData);
+    }
+    cart.discount(0.5);
+  } catch (error) {
+    console.error(error);
+    res.redirect('/cart');
+  }
+  
+  req.session.cart = cart;
+  res.redirect('/cart');
+});
+
 router.get('/discount/verify', function(req, res, next) {
   if (!req.session.cart) {
     return res.render('cart', {
@@ -66,9 +87,9 @@ router.get('/discount/verify', function(req, res, next) {
   var cart = new Cart(req.session.cart);
 
   // veirfy discount code and set discount rate
-  
 
-  cart.discount();
+
+  cart.discount(0.1);
 
   req.session.cart = cart;
   res.redirect('/cart');

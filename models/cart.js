@@ -29,7 +29,7 @@ module.exports = function Cart(cart) {
         return arr;
     };
 
-    this.discount = function() {
-        this.discountRate = 0.2;
+    this.discount = function(rate) {
+        this.discountRate = rate;
     }
 };
