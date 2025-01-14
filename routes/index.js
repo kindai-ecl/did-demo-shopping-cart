@@ -78,21 +78,4 @@ router.post('/verify', function(req, res, next) {
   res.redirect('/cart');
 });
 
-router.get('/discount/verify', function(req, res, next) {
-  if (!req.session.cart) {
-    return res.render('cart', {
-      products: null
-    });
-  }
-  var cart = new Cart(req.session.cart);
-
-  // veirfy discount code and set discount rate
-
-
-  cart.discount(0.1);
-
-  req.session.cart = cart;
-  res.redirect('/cart');
-})
-
 module.exports = router;
