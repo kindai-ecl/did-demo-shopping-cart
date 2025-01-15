@@ -9,3 +9,5 @@
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
+# Local Netlify folder
+.netlify
