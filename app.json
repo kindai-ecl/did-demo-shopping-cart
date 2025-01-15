@@ -1,4 +1,4 @@
 {
-    "name" : "app",
+    "name" : "did-web-shop",
     "script" : "./bin/www"
 }
