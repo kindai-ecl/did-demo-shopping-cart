@@ -11,26 +11,35 @@
         <label class="form-check-label" for="vp">
             VPs
         </label>
-    </div>
-    <div id="reader" style="width: 100%;"></div>
-    <input type="hidden" id="qrData" name="qrData" value="">
-
-    <div class="text-right">
+        <div class="text-center">
+            <b>Preferred camera:</b>
+            <select id="cam-list">
+                <option value="environment" selected>Environment Facing (default)</option>
+            </select>
         <button id="submitBtn" type="submit" class="btn btn-success" disabled>Apply</button>
+        </div>
+    </div>
+    <div id="reader" style="width: 80%; margin: 0 auto; text-align: center; margin-top: 20px;">
+        <input type="hidden" id="qrData" name="qrData" value="">
+        <video id="qr-video"></video>
     </div>
 </form>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script src="/js/html5-qrcode.min.js"></script>
-    <script>
-        const html5QrCode = new Html5Qrcode("reader");
+    {{!-- <script src="camera.js"></script> --}}
+<script type="module">
+    import QrScanner from "./js/qr-scanner.min.js";
 
-        const config = { fps: 10, qrbox: 350 };
-        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-            const qrDataInput = document.getElementById('qrData');
-            qrDataInput.value = decodedText;
+    const video = document.getElementById('qr-video');
+    const camList = document.getElementById('cam-list');
+    const submitBtn = document.getElementById('submitBtn');
+    const qrDataInput = document.getElementById('qrData');
 
-            Toastify({
+    const setResult = (result) => {
+        qrDataInput.value = result.data;
+        scanner.stop()
+
+        Toastify({
                 text: "QR Code Scanned Successfully!",
                 duration: 7000, 
                 gravity: "top", 
@@ -38,17 +47,31 @@
                 backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
             }).showToast();
 
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = false;
-            html5QrCode.pause().catch(err => console.error("Failed to pause scanning:", err));
-            // html5QrCode.stop().catch(err => console.error("Failed to stop scanning:", err));
-        };
+        submitBtn.disabled = false;
+    };
 
-        html5QrCode.start(
-            { facingMode: "environment" }, 
-            config,
-            qrCodeSuccessCallback
-        )
-        .catch(err => console.error(`Error starting QR Code scanner: ${err}`));
+    const scanner = new QrScanner(video, result => setResult(result),
+    {
+        onDecodeError: error => {
+        },
+        highlightScanRegion: true,
+        highlightCodeOutline: true,
+    });
 
-    </script>
+    const updateFlashAvailability = () => {
+    };
+
+    scanner.start().then(() => {
+    updateFlashAvailability();
+    QrScanner.listCameras(true).then(cameras => cameras.forEach(camera => {
+        const option = document.createElement('option');
+        option.value = camera.id;
+        option.text = camera.label;
+        camList.add(option);
+    }));
+    });
+
+    await QrScanner.hasCamera().then(console.log("Camera available"));
+    scanner.start().catch(err => console.error("Error starting scanner:", err));
+
+</script>
